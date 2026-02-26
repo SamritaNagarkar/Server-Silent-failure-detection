@@ -1,19 +1,15 @@
 import pandas as pd
 from pathlib import Path
 
-# Define path to dataset
 DATA_DIR = Path("data/raw/ServerMachineDataset/train")
-FILE_NAME = "machine-1-1.txt"
+PROCESSED_DIR = Path("data/processed/train")
+PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
 
-file_path = DATA_DIR / FILE_NAME
+for file in DATA_DIR.glob("*.txt"):
+    df = pd.read_csv(file, sep=",", header=None)
+    df.columns = [f"sensor_{i+1}" for i in range(df.shape[1])]
+    
+    processed_file = PROCESSED_DIR / f"{file.stem}.csv"
+    df.to_csv(processed_file, index=False)
+    print(f"{file.name} processed and saved to {processed_file}")
 
-# Load the space-separated file (no headers in raw data)
-df = pd.read_csv(file_path, sep=",", header=None)
-
-# Assign generic column names
-df.columns = [f"sensor_{i+1}" for i in range(df.shape[1])]
-
-print("Data loaded successfully")
-print("Shape (rows, columns):", df.shape)
-print("\nFirst 5 rows:")
-print(df.head())
